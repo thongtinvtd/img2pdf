@@ -5,7 +5,7 @@ from os import walk
 
 
 def getFilePath1():
-    extension = ['jpg', 'png']
+    extension = ['jpg', 'png','jpeg']
     rootPath = os.path.abspath(os.getcwd())
     files = next(walk(rootPath), (None, None, []))
     folders = files[1]
@@ -15,10 +15,12 @@ def getFilePath1():
         paths = next(walk(nextPath), (None, None, []))[2]
         paths1 = []
         for file in paths:
-            if file[-3:] in extension:
+            extensionFile = file[-4:].replace('.','')
+            if extensionFile in extension:
                 file = nextPath + f'\\{file}'
                 paths1.append(file)
         inputs.append((folder, paths1))
+    print('inputs', inputs)
     return inputs
     # return [(filename,[imageFiles])...]
 
@@ -40,13 +42,14 @@ def getFilePath():
 
 def img2pdf(files, output='output.pdf'):
     imageList = []
-    for file in files:
-        im1 = im.open(file)
-        im11 = im1.convert('RGB')
-        imageList.append(im11)
-    image = imageList[0]
-    imageList.pop(0)  # del imageList[0]
-    image.save(output, save_all=True, append_images=imageList)
+    if files :
+        for file in files:
+            im1 = im.open(file)
+            im11 = im1.convert('RGB')
+            imageList.append(im11)
+        image = imageList[0]
+        imageList.pop(0)  # del imageList[0]
+        image.save(output, save_all=True, append_images=imageList)
 
 
 def rename():
@@ -54,13 +57,14 @@ def rename():
 
 
 def main():
-    print('Please copy all needed files to folder naming "img"')
+    print('Please copy all needed images to a folder')
     answer = input("If it was done, press Enter to continue...")
-    paths = getFilePath1()
-    for path in paths:
-        fileOutput = path[0]
-        filePath = path[1]
-        img2pdf(filePath, fileOutput+'.pdf')
+    if getFilePath1():
+        paths = getFilePath1()
+        for path in paths:
+            fileOutput = path[0]
+            filePath = path[1]
+            img2pdf(filePath, fileOutput+'.pdf')
 
 
 if __name__ == '__main__':
